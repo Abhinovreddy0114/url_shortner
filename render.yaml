@@ -2,7 +2,7 @@
 databases:
   - name: url-shortener-db
     databaseName: url_shortener
-    user: postgres
+    user: snapurl_admin
     plan: free
 
 services:

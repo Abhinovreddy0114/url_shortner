@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: url_shortener_db
+    environment:
+      POSTGRES_DB: url_shortener
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432" # Maps container's 5432 port to host's 5433 port to avoid conflicts with local Postgres.app
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Runs init.sql automatically on startup
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: url_shortener_web
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: url_shortener
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

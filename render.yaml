@@ -1,0 +1,34 @@
+# render.yaml - Render Blueprint specification for SnapURL
+databases:
+  - name: url-shortener-db
+    databaseName: url_shortener
+    user: postgres
+    plan: free
+
+services:
+  - type: web
+    name: url-shortener-web
+    env: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: url-shortener-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: url-shortener-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: url-shortener-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: url-shortener-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: url-shortener-db
+          property: password

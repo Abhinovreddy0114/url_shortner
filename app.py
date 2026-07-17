@@ -28,6 +28,34 @@ except Exception as e:
     print(f"Error initializing PostgreSQL connection pool: {e}")
     db_pool = None
 
+def init_db():
+    if db_pool is None:
+        print("Database connection pool is not initialized. Skipping DB initialization.")
+        return
+    conn = None
+    try:
+        conn = db_pool.getconn()
+        with conn.cursor() as cur:
+            if os.path.exists("init.sql"):
+                print("Running init.sql to initialize database...")
+                with open("init.sql", "r") as f:
+                    sql_script = f.read()
+                cur.execute(sql_script)
+                conn.commit()
+                print("Database initialized successfully.")
+            else:
+                print("init.sql not found. Skipping initialization.")
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            db_pool.putconn(conn)
+
+# Run database initialization
+init_db()
+
 def get_db_connection():
     if db_pool is None:
         raise Exception("Database connection pool is not initialized")
@@ -135,5 +163,6 @@ def redirect_to_long_url(short_code):
             release_db_connection(conn)
 
 if __name__ == '__main__':
-    # Run application
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # Run application on the environment-specified port, defaulting to 5001
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host='0.0.0.0', port=port, debug=True)

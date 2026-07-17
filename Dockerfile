@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application directories and files
 COPY app.py .
+COPY init.sql .
 COPY templates/ templates/
 COPY static/ static/
 
